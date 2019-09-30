@@ -248,7 +248,7 @@
 
     <scm>
         <connection>scm:git:https://github.com/pousse-cafe/pousse-cafe-maven-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/pousse-cafe/pousse-cafe-journal-maven-plugin.git</developerConnection>
+        <developerConnection>scm:git:ssh://git@github.com/pousse-cafe/pousse-cafe-maven-plugin.git</developerConnection>
         <url>http://github.com/pousse-cafe/pousse-cafe-maven-plugin</url>
     </scm>
 </project>
