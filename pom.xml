@@ -22,7 +22,7 @@
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
             <artifactId>pousse-cafe-doc</artifactId>
-            <version>0.13.0-SNAPSHOT</version>
+            <version>0.14.0</version>
             <exclusions>
             <exclusion>
                 <groupId>com.google.guava</groupId>
