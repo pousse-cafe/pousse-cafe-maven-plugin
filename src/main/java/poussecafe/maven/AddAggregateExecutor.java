@@ -8,6 +8,7 @@ import java.util.Objects;
 import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.spring.jpa.storage.SpringJpaStorage;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
 import poussecafe.storage.internal.InternalStorage;
 
@@ -171,6 +172,7 @@ public class AddAggregateExecutor implements MojoExecutor {
         Map<String, StorageSourceGeneratorBuilder> availableGenerators = new HashMap<>();
         availableGenerators.put(InternalStorage.NAME, new InternalStorageSourceGenerator.Builder());
         availableGenerators.put(SpringMongoDbStorage.NAME, new SpringMongoStorageSourceGenerator.Builder());
+        availableGenerators.put(SpringJpaStorage.NAME, new SpringJpaStorageSourceGenerator.Builder());
         return availableGenerators;
     }
 }

@@ -4,7 +4,7 @@
   <parent>
     <artifactId>pousse-cafe</artifactId>
     <groupId>org.pousse-cafe-framework</groupId>
-    <version>0.10.0-SNAPSHOT</version>
+    <version>0.17.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>pousse-cafe-maven-plugin-test</artifactId>
@@ -34,6 +34,7 @@
           <storageAdapters>
             <storageAdapter>in-memory</storageAdapter>
             <storageAdapter>spring-mongo</storageAdapter>
+            <storageAdapter>spring-jpa</storageAdapter>
           </storageAdapters>
         </configuration>
       </plugin>

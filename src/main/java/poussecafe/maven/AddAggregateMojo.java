@@ -65,7 +65,7 @@ public class AddAggregateMojo extends AbstractMojo {
 
     /**
      * List of storage adapters to create. Storage name is used to select them. By default, only internal storage
-     * classes are generated. Currently, supported storage names are: "internal" and "mongo".
+     * classes are generated. Currently, supported storage names are: "internal", "spring-mongo", "spring-jpa".
      *
      * @since 0.3
      */
