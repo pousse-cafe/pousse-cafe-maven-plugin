@@ -60,7 +60,7 @@ Usage
             <configuration>
                 <storageAdapters>
                     <storageAdapter>internal</storageAdapter>
-                    <storageAdapter>spring-mongo</storageAdapter>
+                    <storageAdapter>{put here any alternative storage}</storageAdapter>
                 </storageAdapters>
             </configuration>
         </plugin>
@@ -69,6 +69,9 @@ Usage
     ...
 </build>
 ---
+
+    Possible values for alternative storage are "spring-mongo" or "spring-jpa" (without the quotes). Generally, you only
+    need one.
 
     After that, you can execute the following command in your Maven project:
 
