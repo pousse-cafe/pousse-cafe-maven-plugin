@@ -16,6 +16,7 @@ import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import poussecafe.source.Scanner;
 import poussecafe.source.model.MessageListener;
+import poussecafe.source.model.Model;
 import poussecafe.source.pcmil.PcMilExporter;
 
 @Mojo(
@@ -30,7 +31,12 @@ public class ExportProcessMojo extends AbstractMojo {
     public void execute()
             throws MojoExecutionException,
             MojoFailureException {
+        configureClassPath();
+        var model = buildModel();
+        exportProcess(model);
+    }
 
+    private void configureClassPath() throws MojoExecutionException {
         try {
             List<String> runtimeClasspathElements = project.getRuntimeClasspathElements();
             ClassRealm realm = descriptor.getClassRealm();
@@ -41,7 +47,9 @@ public class ExportProcessMojo extends AbstractMojo {
         } catch (Exception e) {
             throw new MojoExecutionException("Unable to configure classpath", e);
         }
+    }
 
+    private Model buildModel() throws MojoExecutionException {
         var scanner = new Scanner.Builder().build();
         for(String pathName : project.getCompileSourceRoots()) {
             Path path = Path.of(pathName);
@@ -70,12 +78,15 @@ public class ExportProcessMojo extends AbstractMojo {
                 getLog().debug("- " + listener.consumedMessage() + " -> " + listener.container() + "[" + listener.methodName()+ "]");
             }
         }
+        return model;
+    }
 
+    private void exportProcess(Model model) {
         PcMilExporter exporter = new PcMilExporter.Builder()
                 .model(model)
                 .processName(Optional.ofNullable(processName))
                 .build();
-        getLog().info("Process: " + processName + "\n" + exporter.toPcMil() + "\n");
+        getLog().info("Process: " + Optional.ofNullable(processName).orElse("all") + "\n" + exporter.toPcMil() + "\n");
     }
 
     /**
