@@ -3,7 +3,7 @@
     ------
     Gérard Dethier
     ------
-    2019-09-17
+    2020-08-04
     ------
 
 Pousse-Café Maven Plugin
@@ -19,6 +19,8 @@ Pousse-Café Maven Plugin
     * {{{./generate-doc-mojo.html}pousse-cafe:generate-doc}} produces an expert-readable documentation of the model
 
     * {{{./add-aggregate-mojo.html}pousse-cafe:add-aggregate}} generates source code for a new Aggregate
+
+    * {{{./export-process-mojo.html}pousse-cafe:export-process}} exports processes into {{{https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL}EMIL}} language
 
 * Usage
 

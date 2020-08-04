@@ -15,10 +15,15 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import poussecafe.source.Scanner;
+import poussecafe.source.emil.EmilExporter;
 import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.Model;
-import poussecafe.source.pcmil.PcMilExporter;
 
+/**
+ * <p>Exports a selected process or all processes into
+ * <a href="https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL" target="_blank">EMIL</a> language
+ * and outputs the result in Maven logs.</p>
+ */
 @Mojo(
     name = "export-process",
     requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
@@ -82,14 +87,16 @@ public class ExportProcessMojo extends AbstractMojo {
     }
 
     private void exportProcess(Model model) {
-        PcMilExporter exporter = new PcMilExporter.Builder()
+        EmilExporter exporter = new EmilExporter.Builder()
                 .model(model)
                 .processName(Optional.ofNullable(processName))
                 .build();
-        getLog().info("Process: " + Optional.ofNullable(processName).orElse("all") + "\n" + exporter.toPcMil() + "\n");
+        getLog().info("Process: " + Optional.ofNullable(processName).orElse("all") + "\n" + exporter.toEmil() + "\n");
     }
 
     /**
+     * The name of the process to export. If no name is provided, then all processes are exported.
+     *
      * @since 0.15
      */
     @Parameter(property = "processName")
