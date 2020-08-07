@@ -28,7 +28,7 @@ public class <name>InternalDataAccess extends InternalDataAccess\<<name>Id, <nam
     @Override
     public List\<<name>Attributes> findByName(String name) {
         return findAll().stream()
-                .filter(data -> data.name().valueEquals(name))
+                .filter(data -> data.name().value().equals(name))
                 .collect(toList());
     }
 <endif>
