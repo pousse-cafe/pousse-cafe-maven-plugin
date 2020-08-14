@@ -17,7 +17,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-public abstract class GoatTest {
+public abstract class GoalTest {
 
     protected void givenProjectDirectory(File projectDirectory) throws IOException {
         this.projectDirectory = projectDirectory;
@@ -47,6 +47,7 @@ public abstract class GoatTest {
         request.setBaseDirectory(projectDirectory);
         request.setGoals(goals);
         request.setBatchMode(true);
+        request.setUpdateSnapshots(true);
         result = invoker.execute(request);
     }
 

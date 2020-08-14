@@ -1,6 +1,7 @@
 package poussecafe.maven;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -8,8 +9,14 @@ import java.util.Objects;
 import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import poussecafe.exception.PousseCafeException;
+import poussecafe.source.generation.CoreCodeGenerator;
+import poussecafe.source.generation.StorageAdaptersCodeGenerator;
+import poussecafe.source.generation.internal.InternalStorageAdaptersCodeGenerator;
+import poussecafe.source.model.Aggregate;
 import poussecafe.spring.jpa.storage.SpringJpaStorage;
+import poussecafe.spring.jpa.storage.codegeneration.JpaStorageAdaptersCodeGenerator;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
+import poussecafe.spring.mongo.storage.codegeneration.MongoStorageAdaptersCodeGenerator;
 import poussecafe.storage.internal.InternalStorage;
 
 public class AddAggregateExecutor implements MojoExecutor {
@@ -28,8 +35,6 @@ public class AddAggregateExecutor implements MojoExecutor {
         public Builder packageName(String packageName) {
             executor.packageName = packageName;
             executor.aggregateDirectory = aggregatePackageDirectory(packageName);
-            executor.modelDirectory = executor.aggregateDirectory;
-            executor.adaptersDirectory = new File(executor.aggregateDirectory, "adapters");
             return this;
         }
 
@@ -57,23 +62,15 @@ public class AddAggregateExecutor implements MojoExecutor {
             return this;
         }
 
-        public Builder demoAttribute(boolean demoAttribute) {
-            this.demoAttribute = demoAttribute;
-            return this;
-        }
-
-        private boolean demoAttribute;
-
         public AddAggregateExecutor build() {
+            Objects.requireNonNull(sourceDirectory);
             Objects.requireNonNull(executor.aggregateDirectory);
             Objects.requireNonNull(executor.name);
 
-            executor.sourceWriter = new SourceWriter.Builder()
-                    .modelPackageName(executor.packageName)
-                    .adaptersPackageName(executor.packageName + ".adapters")
+            executor.sourceDirectory = sourceDirectory.toPath();
+            executor.aggregate = new Aggregate.Builder()
+                    .packageName(executor.packageName)
                     .name(executor.name)
-                    .storageAdapters(executor.storageAdapters)
-                    .demoAttribute(demoAttribute)
                     .build();
 
             return executor;
@@ -88,13 +85,7 @@ public class AddAggregateExecutor implements MojoExecutor {
 
     private File aggregateDirectory;
 
-    private File modelDirectory;
-
-    private File adaptersDirectory;
-
     private String name;
-
-    private SourceWriter sourceWriter;
 
     private Set<String> storageAdapters;
 
@@ -104,7 +95,6 @@ public class AddAggregateExecutor implements MojoExecutor {
     public void execute() throws MojoExecutionException {
         try {
             checkDoesNotExist();
-            createAggregateDirectories();
             writeModelFiles();
             writeStorageAdaptersFiles();
         } catch (Exception e) {
@@ -118,61 +108,40 @@ public class AddAggregateExecutor implements MojoExecutor {
         }
     }
 
-    private void createAggregateDirectories() {
-        createDirectory(modelDirectory);
-        createDirectory(adaptersDirectory);
-    }
-
-    private void createDirectory(File directory) {
-        if(!directory.mkdirs() && (!directory.exists() || !directory.isDirectory())) {
-            throw new PousseCafeException("Unable to create directory " + directory.getAbsolutePath());
-        }
-    }
-
     private void writeModelFiles() {
         if(!missingAdaptersOnly) {
-            ModelSourceGenerator sourceGenerator = new ModelSourceGenerator.Builder()
-                    .aggregateName(name)
-                    .modelDirectory(modelDirectory)
-                    .sourceWriter(sourceWriter)
+            var coreCodeGenerator = new CoreCodeGenerator.Builder()
+                    .sourceDirectory(sourceDirectory)
                     .build();
-            sourceGenerator.generate();
+            coreCodeGenerator.generate(aggregate);
         }
     }
 
+    private Path sourceDirectory;
+
+    private Aggregate aggregate;
+
     private void writeStorageAdaptersFiles() {
-        writeCommonStorageFiles();
-        writeSpecificStorageFiles();
-    }
-
-    private void writeCommonStorageFiles() {
-        CommonStorageSourceGenerator generator = new CommonStorageSourceGenerator.Builder()
-                .aggregateName(name)
-                .adaptersDirectory(adaptersDirectory)
-                .sourceWriter(sourceWriter)
-                .build();
-        generator.generate();
-    }
-
-    private void writeSpecificStorageFiles() {
-        Map<String, StorageSourceGeneratorBuilder> availableGenerators = availableGenerators();
-        for(Entry<String, StorageSourceGeneratorBuilder> entry : availableGenerators.entrySet()) {
+        Map<String, StorageAdaptersCodeGenerator> availableGenerators = availableGenerators();
+        for(Entry<String, StorageAdaptersCodeGenerator> entry : availableGenerators.entrySet()) {
             if(storageAdapters.contains(entry.getKey())) {
-                StorageSourceGenerator generator = entry.getValue()
-                    .aggregateName(name)
-                    .adaptersDirectory(adaptersDirectory)
-                    .sourceWriter(sourceWriter)
-                    .build();
-                generator.generate();
+                StorageAdaptersCodeGenerator generator = entry.getValue();
+                generator.generate(aggregate);
             }
         }
     }
 
-    private Map<String, StorageSourceGeneratorBuilder> availableGenerators() {
-        Map<String, StorageSourceGeneratorBuilder> availableGenerators = new HashMap<>();
-        availableGenerators.put(InternalStorage.NAME, new InternalStorageSourceGenerator.Builder());
-        availableGenerators.put(SpringMongoDbStorage.NAME, new SpringMongoStorageSourceGenerator.Builder());
-        availableGenerators.put(SpringJpaStorage.NAME, new SpringJpaStorageSourceGenerator.Builder());
+    private Map<String, StorageAdaptersCodeGenerator> availableGenerators() {
+        Map<String, StorageAdaptersCodeGenerator> availableGenerators = new HashMap<>();
+        availableGenerators.put(InternalStorage.NAME, new InternalStorageAdaptersCodeGenerator.Builder()
+                .sourceDirectory(sourceDirectory)
+                .build());
+        availableGenerators.put(SpringMongoDbStorage.NAME, new MongoStorageAdaptersCodeGenerator.Builder()
+                .sourceDirectory(sourceDirectory)
+                .build());
+        availableGenerators.put(SpringJpaStorage.NAME, new JpaStorageAdaptersCodeGenerator.Builder()
+                .sourceDirectory(sourceDirectory)
+                .build());
         return availableGenerators;
     }
 }

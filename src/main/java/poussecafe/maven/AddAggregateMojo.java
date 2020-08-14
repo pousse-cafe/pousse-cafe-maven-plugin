@@ -34,7 +34,6 @@ public class AddAggregateMojo extends AbstractMojo {
                 .name(aggregateName)
                 .storageAdapters(asSet(storageAdapters))
                 .missingAdaptersOnly(missingAdaptersOnly)
-                .demoAttribute(demoAttribute)
                 .build();
         executor.execute();
     }
@@ -82,11 +81,12 @@ public class AddAggregateMojo extends AbstractMojo {
     private boolean missingAdaptersOnly;
 
     /**
-     * Adds a "demo" attribute to the Aggregate. This option may be used to generate an example when learning how
-     * Aggregates should be written.
+     * This option is not taken into account anymore.
      *
      * @since 0.5
+     * @deprecated This option has no replacement
      */
+    @Deprecated(since = "0.16")
     @Parameter(defaultValue = "false", property = "demoAttribute", required = true)
     private boolean demoAttribute;
 }
