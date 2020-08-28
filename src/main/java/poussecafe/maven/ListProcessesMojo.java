@@ -2,10 +2,8 @@ package poussecafe.maven;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -16,22 +14,19 @@ import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.codehaus.plexus.classworlds.realm.ClassRealm;
 import poussecafe.source.Scanner;
-import poussecafe.source.emil.EmilExporter;
-import poussecafe.source.model.MessageListener;
 import poussecafe.source.model.Model;
+import poussecafe.source.model.ProcessModel;
 
 /**
- * <p>Exports a selected process or all processes into
- * <a href="https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL" target="_blank">EMIL</a> language
- * and outputs the result in Maven logs.</p>
+ * <p>Lists all process names detected in a given source tree.</p>
  */
 @Mojo(
-    name = "export-process",
+    name = "list-processes",
     requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
     requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
     requiresDirectInvocation = true
 )
-public class ExportProcessMojo extends AbstractMojo {
+public class ListProcessesMojo extends AbstractMojo {
 
     @Override
     public void execute()
@@ -39,7 +34,7 @@ public class ExportProcessMojo extends AbstractMojo {
             MojoFailureException {
         configureClassPath();
         var model = buildModel();
-        exportProcess(model);
+        listProcess(model);
     }
 
     private void configureClassPath() throws MojoExecutionException {
@@ -69,52 +64,15 @@ public class ExportProcessMojo extends AbstractMojo {
             }
         }
 
-        var model = scanner.model();
-        if(getLog().isDebugEnabled()) {
-            var allListeners = model.messageListeners();
-            getLog().debug("Detected " + allListeners.size() + " listeners:");
-            for(MessageListener listener : allListeners) {
-                getLog().debug("- " + listener.consumedMessage() + " -> " + listener.container() + "[" + listener.methodName()+ "]");
-            }
-            getLog().debug("");
-
-            var processListeners = model.processListeners(processName);
-            getLog().debug("Detected " + processListeners.size() + " process listeners:");
-            for(MessageListener listener : processListeners) {
-                getLog().debug("- " + listener.consumedMessage() + " -> " + listener.container() + "[" + listener.methodName()+ "]");
-            }
-        }
-        return model;
+        return scanner.model();
     }
 
-    private void exportProcess(Model model) throws MojoExecutionException {
-        EmilExporter exporter = new EmilExporter.Builder()
-                .model(model)
-                .processName(Optional.ofNullable(processName))
-                .build();
-        var emil = exporter.toEmil();
-        try {
-            Files.writeString(emilFile.toPath(), emil);
-        } catch (IOException e) {
-            throw new MojoExecutionException("Unable to write to file " + emilFile, e);
+    private void listProcess(Model model) {
+        getLog().info("Found " + model.processes().size() + " processes:");
+        for(ProcessModel process : model.processes()) {
+            getLog().info("- " + process.simpleName());
         }
     }
-
-    /**
-     * The name of the process to export. If no name is provided, then all processes are exported.
-     *
-     * @since 0.15
-     */
-    @Parameter(property = "processName")
-    private String processName;
-
-    /**
-     * The path to the output file.
-     *
-     * @since 0.17
-     */
-    @Parameter(property = "emilFile", required = true)
-    private File emilFile;
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
