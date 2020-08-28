@@ -31,10 +31,7 @@ import static java.util.Collections.emptyList;
 public class GenerateDocMojo extends AbstractMojo {
 
     @Override
-    public void execute()
-            throws MojoExecutionException,
-            MojoFailureException {
-
+    public void execute() throws MojoExecutionException, MojoFailureException {
         if(!Boolean.parseBoolean(skipDoc)) {
             List<String> sourcePath = getSourcePath();
             List<String> classPath = getClassPath();
