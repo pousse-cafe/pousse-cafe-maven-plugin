@@ -1,6 +1,7 @@
 package poussecafe.maven;
 
 import java.io.File;
+import java.util.Optional;
 import javax.inject.Inject;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -10,6 +11,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import poussecafe.storage.internal.InternalStorage;
+
+import static poussecafe.collection.Collections.asSet;
 
 /**
  * <p>Imports a process described using
@@ -27,8 +31,8 @@ public class ImportProcessMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         classPathConfigurator.configureClassPath(project, descriptor);
-        var model = modelOperations.buildModelFromEmil(getLog(), emilFile, basePackage);
-        modelOperations.importProcess(model, sourceDirectory);
+        var newModel = modelOperations.buildModelFromEmil(getLog(), emilFile, basePackage);
+        modelOperations.importProcess(Optional.empty(), newModel, sourceDirectory, asSet(storageAdapters));
     }
 
     @Inject
@@ -60,6 +64,15 @@ public class ImportProcessMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project.build.sourceDirectory}", property = "sourceDirectory", required = true)
     private File sourceDirectory;
+
+    /**
+     * List of storage adapters to create. Storage name is used to select them. By default, only internal storage
+     * classes are generated. Currently, supported storage names are: "internal", "spring-mongo", "spring-jpa".
+     *
+     * @since 0.17
+     */
+    @Parameter(defaultValue = InternalStorage.NAME, property = "storageAdapters", required = true)
+    private String[] storageAdapters;
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;

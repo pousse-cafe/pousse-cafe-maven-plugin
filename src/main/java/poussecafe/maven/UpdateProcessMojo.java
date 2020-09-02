@@ -14,6 +14,9 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import poussecafe.storage.internal.InternalStorage;
+
+import static poussecafe.collection.Collections.asSet;
 
 /**
  * <p>Updates a process. This goal is equivalent to calling export-process, edit the generated file
@@ -32,9 +35,9 @@ public class UpdateProcessMojo extends AbstractMojo {
         classPathConfigurator.configureClassPath(project, descriptor);
 
         try {
-            var model = modelOperations.buildModelFromSource(project);
+            var currentModel = modelOperations.buildModelFromSource(project);
             var temporaryFile = File.createTempFile(processName, ".emil");
-            modelOperations.exportProcess(model, Optional.ofNullable(processName), temporaryFile);
+            modelOperations.exportProcess(currentModel, Optional.ofNullable(processName), temporaryFile);
             var initialContent = Files.readString(temporaryFile.toPath());
             editEmil(temporaryFile);
             var newContent = Files.readString(temporaryFile.toPath());
@@ -42,7 +45,8 @@ public class UpdateProcessMojo extends AbstractMojo {
                 getLog().info("No change detected, skipping update");
             } else {
                 var newModel = modelOperations.buildModelFromEmil(getLog(), temporaryFile, basePackage);
-                modelOperations.importProcess(newModel, sourceDirectory);
+                modelOperations.importProcess(Optional.of(currentModel), newModel, sourceDirectory,
+                        asSet(storageAdapters));
             }
         } catch (IOException e) {
             throw new MojoFailureException("Unable to update process", e);
@@ -50,12 +54,12 @@ public class UpdateProcessMojo extends AbstractMojo {
     }
 
     private void editEmil(File temporaryFile) throws IOException, MojoFailureException {
-        String defaultEditor = System.getenv("EDITOR");
-        if(defaultEditor == null) {
-            defaultEditor = "vim";
+        String editor = System.getenv("EDITOR");
+        if(editor == null) {
+            editor = "vim";
         }
 
-        var editorProcess = new ProcessBuilder(defaultEditor, temporaryFile.getAbsolutePath())
+        var editorProcess = new ProcessBuilder(editor, temporaryFile.getAbsolutePath())
                 .redirectError(Redirect.INHERIT)
                 .redirectOutput(Redirect.INHERIT)
                 .redirectInput(Redirect.INHERIT)
@@ -103,6 +107,15 @@ public class UpdateProcessMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = "${project.build.sourceDirectory}", property = "sourceDirectory", required = true)
     private File sourceDirectory;
+
+    /**
+     * List of storage adapters to create. Storage name is used to select them. By default, only internal storage
+     * classes are generated. Currently, supported storage names are: "internal", "spring-mongo", "spring-jpa".
+     *
+     * @since 0.17
+     */
+    @Parameter(defaultValue = InternalStorage.NAME, property = "storageAdapters", required = true)
+    private String[] storageAdapters;
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
