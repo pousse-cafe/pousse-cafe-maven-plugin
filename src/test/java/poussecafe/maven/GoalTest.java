@@ -61,15 +61,6 @@ public abstract class GoalTest {
         }
     }
 
-    protected void whenExecutingMojo(MojoExecutor executor) {
-        try {
-            mojoExecutionException = null;
-            executor.execute();
-        } catch (MojoExecutionException e) {
-            mojoExecutionException = e;
-        }
-    }
-
     private MojoExecutionException mojoExecutionException;
 
     protected void thenMojoExecutionSuccess(boolean success) {

@@ -10,7 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import static poussecafe.collection.Collections.asSet;
+import static java.util.Arrays.asList;
 
 public class AddAggregateExecutorIT extends GoalTest {
 
@@ -62,13 +62,7 @@ public class AddAggregateExecutorIT extends GoalTest {
     }
 
     private void whenGeneratingSourceFiles() throws MojoExecutionException, MavenInvocationException {
-        whenExecutingMojo(new AddAggregateExecutor.Builder()
-                .sourceDirectory(sourceDirectory())
-                .packageName("sample")
-                .name("Sample")
-                .storageAdapters(asSet("internal", "spring-mongo"))
-                .missingAdaptersOnly(false)
-                .build());
+        whenExecutingMavenGoals(asList("pousse-cafe:add-aggregate"));
     }
 
     private void thenGenerationSuccessful() {
