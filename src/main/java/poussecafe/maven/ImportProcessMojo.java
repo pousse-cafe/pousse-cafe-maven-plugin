@@ -32,7 +32,7 @@ public class ImportProcessMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         classPathConfigurator.configureClassPath(project, descriptor);
         var newModel = modelOperations.buildModelFromEmil(getLog(), emilFile, basePackage);
-        modelOperations.importProcess(Optional.empty(), newModel, sourceDirectory, asSet(storageAdapters));
+        modelOperations.importModel(Optional.empty(), newModel, sourceDirectory, asSet(storageAdapters));
     }
 
     @Inject

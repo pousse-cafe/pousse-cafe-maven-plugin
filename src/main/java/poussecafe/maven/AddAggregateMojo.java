@@ -1,10 +1,17 @@
 package poussecafe.maven;
 
 import java.io.File;
+import java.util.Optional;
+import javax.inject.Inject;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
+import org.apache.maven.project.MavenProject;
+import poussecafe.source.model.Aggregate;
+import poussecafe.source.model.Model;
 import poussecafe.storage.internal.InternalStorage;
 
 import static poussecafe.collection.Collections.asSet;
@@ -23,20 +30,33 @@ import static poussecafe.collection.Collections.asSet;
  * </ul>
  * <p>Depending on chosen storage adapters, additional specific classes may be created in addition to the list mentioned above.</p>
  */
-@Mojo(name = "add-aggregate")
+@Mojo(
+    name = "add-aggregate",
+    requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
+    requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
+    requiresDirectInvocation = true
+)
 public class AddAggregateMojo extends AbstractMojo {
 
     @Override
     public void execute() throws MojoExecutionException {
-        AddAggregateExecutor executor = new AddAggregateExecutor.Builder()
-                .sourceDirectory(sourceDirectory)
-                .packageName(aggregatePackage)
+        classPathConfigurator.configureClassPath(project, descriptor);
+
+        var currentModel = modelOperations.buildModelFromSource(project);
+        var newModel = new Model();
+        newModel.putAggregate(new Aggregate.Builder()
                 .name(aggregateName)
-                .storageAdapters(asSet(storageAdapters))
-                .missingAdaptersOnly(missingAdaptersOnly)
-                .build();
-        executor.execute();
+                .packageName(aggregatePackage)
+                .build());
+        modelOperations.importModel(Optional.of(currentModel), newModel, sourceDirectory,
+                asSet(storageAdapters));
     }
+
+    @Inject
+    private ClassPathConfigurator classPathConfigurator;
+
+    @Inject
+    private ModelOperations modelOperations;
 
     /**
      * Path of the folder containing the Model's source code. Classes and packages will be created in this folder.
@@ -76,7 +96,9 @@ public class AddAggregateMojo extends AbstractMojo {
      * want to add support for a new storage.
      *
      * @since 0.3
+     * @deprecated This is handled automatically now.
      */
+    @Deprecated(since = "0.17")
     @Parameter(defaultValue = "false", property = "missingAdaptersOnly", required = true)
     private boolean missingAdaptersOnly;
 
@@ -89,4 +111,10 @@ public class AddAggregateMojo extends AbstractMojo {
     @Deprecated(since = "0.16")
     @Parameter(defaultValue = "false", property = "demoAttribute", required = true)
     private boolean demoAttribute;
+
+    @Parameter(defaultValue = "${project}", readonly = true)
+    private MavenProject project;
+
+    @Parameter(defaultValue = "${plugin}", readonly = true)
+    private PluginDescriptor descriptor;
 }

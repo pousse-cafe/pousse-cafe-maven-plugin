@@ -45,7 +45,7 @@ public class UpdateProcessMojo extends AbstractMojo {
                 getLog().info("No change detected, skipping update");
             } else {
                 var newModel = modelOperations.buildModelFromEmil(getLog(), temporaryFile, basePackage);
-                modelOperations.importProcess(Optional.of(currentModel), newModel, sourceDirectory,
+                modelOperations.importModel(Optional.of(currentModel), newModel, sourceDirectory,
                         asSet(storageAdapters));
             }
         } catch (IOException e) {

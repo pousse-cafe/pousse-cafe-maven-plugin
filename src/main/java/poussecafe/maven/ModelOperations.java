@@ -80,7 +80,7 @@ public class ModelOperations {
         }
     }
 
-    public void importProcess(
+    public void importModel(
             Optional<Model> currentModel,
             Model newModel,
             File sourceDirectory,
@@ -92,23 +92,19 @@ public class ModelOperations {
         }
         var generator = generatorBuilder.build();
         generator.generate(newModel);
-        writeStorageAdaptersFiles(currentModel, newModel, sourceDirectory, storageAdapters);
+        writeStorageAdaptersFiles(newModel, sourceDirectory, storageAdapters);
     }
 
     private void writeStorageAdaptersFiles(
-            Optional<Model> currentModel,
             Model newModel,
             File sourceDirectory,
             Set<String> storageAdapters) {
         Map<String, StorageAdaptersCodeGenerator> availableGenerators = availableGenerators(sourceDirectory);
         for(Aggregate aggregate : newModel.aggregates()) {
-            if(currentModel.isEmpty()
-                    || currentModel.get().aggregate(aggregate.simpleName()).isEmpty()) {
-                for(Entry<String, StorageAdaptersCodeGenerator> entry : availableGenerators.entrySet()) {
-                    if(storageAdapters.contains(entry.getKey())) {
-                        StorageAdaptersCodeGenerator generator = entry.getValue();
-                        generator.generate(aggregate);
-                    }
+            for(Entry<String, StorageAdaptersCodeGenerator> entry : availableGenerators.entrySet()) {
+                if(storageAdapters.contains(entry.getKey())) {
+                    StorageAdaptersCodeGenerator generator = entry.getValue();
+                    generator.generate(aggregate);
                 }
             }
         }
