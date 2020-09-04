@@ -49,7 +49,7 @@ public class AddAggregateMojo extends AbstractMojo {
                 .packageName(aggregatePackage)
                 .build());
         modelOperations.importModel(Optional.of(currentModel), newModel, sourceDirectory,
-                asSet(storageAdapters));
+                asSet(storageAdapters), Optional.of(codeFormatterProfile));
     }
 
     @Inject
@@ -90,6 +90,14 @@ public class AddAggregateMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = InternalStorage.NAME, property = "storageAdapters", required = true)
     private String[] storageAdapters;
+
+    /**
+     * Path to a JDT code formatter profile file. This kind of file may be exported directly using Eclipse.
+     *
+     * @since 0.17
+     */
+    @Parameter(property = "codeFormatterProfile")
+    private File codeFormatterProfile;
 
     /**
      * Flag telling to add missing storage adapters. This is useful when you already have your aggregate ready but only

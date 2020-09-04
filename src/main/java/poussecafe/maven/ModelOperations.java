@@ -84,22 +84,27 @@ public class ModelOperations {
             Optional<Model> currentModel,
             Model newModel,
             File sourceDirectory,
-            Set<String> storageAdapters) {
+            Set<String> storageAdapters,
+            Optional<File> codeFormatterProfile) {
         var generatorBuilder = new CoreCodeGenerator.Builder()
                 .sourceDirectory(sourceDirectory.toPath());
         if(currentModel.isPresent()) {
             generatorBuilder.currentModel(currentModel.get());
         }
+        if(codeFormatterProfile.isPresent()) {
+            generatorBuilder.codeFormatterProfile(codeFormatterProfile.get().toPath());
+        }
         var generator = generatorBuilder.build();
         generator.generate(newModel);
-        writeStorageAdaptersFiles(newModel, sourceDirectory, storageAdapters);
+        writeStorageAdaptersFiles(newModel, sourceDirectory, storageAdapters, codeFormatterProfile);
     }
 
     private void writeStorageAdaptersFiles(
             Model newModel,
             File sourceDirectory,
-            Set<String> storageAdapters) {
-        Map<String, StorageAdaptersCodeGenerator> availableGenerators = availableGenerators(sourceDirectory);
+            Set<String> storageAdapters,
+            Optional<File> codeFormatterProfile) {
+        Map<String, StorageAdaptersCodeGenerator> availableGenerators = availableGenerators(sourceDirectory, codeFormatterProfile);
         for(Aggregate aggregate : newModel.aggregates()) {
             for(Entry<String, StorageAdaptersCodeGenerator> entry : availableGenerators.entrySet()) {
                 if(storageAdapters.contains(entry.getKey())) {
@@ -110,17 +115,26 @@ public class ModelOperations {
         }
     }
 
-    private Map<String, StorageAdaptersCodeGenerator> availableGenerators(File sourceDirectory) {
+    private Map<String, StorageAdaptersCodeGenerator> availableGenerators(File sourceDirectory,
+            Optional<File> codeFormatterProfile) {
         Map<String, StorageAdaptersCodeGenerator> availableGenerators = new HashMap<>();
-        availableGenerators.put(InternalStorage.NAME, new InternalStorageAdaptersCodeGenerator.Builder()
-                .sourceDirectory(sourceDirectory.toPath())
-                .build());
-        availableGenerators.put(SpringMongoDbStorage.NAME, new MongoStorageAdaptersCodeGenerator.Builder()
-                .sourceDirectory(sourceDirectory.toPath())
-                .build());
-        availableGenerators.put(SpringJpaStorage.NAME, new JpaStorageAdaptersCodeGenerator.Builder()
-                .sourceDirectory(sourceDirectory.toPath())
-                .build());
+
+        var internalGeneratorBuilder = new InternalStorageAdaptersCodeGenerator.Builder()
+                .sourceDirectory(sourceDirectory.toPath());
+        var mongoGeneratorBuilder = new MongoStorageAdaptersCodeGenerator.Builder()
+                .sourceDirectory(sourceDirectory.toPath());
+        var jpaGeneratorBuilder = new JpaStorageAdaptersCodeGenerator.Builder()
+                .sourceDirectory(sourceDirectory.toPath());
+        if(codeFormatterProfile.isPresent()) {
+            internalGeneratorBuilder.codeFormatterProfile(codeFormatterProfile.get().toPath());
+            mongoGeneratorBuilder.codeFormatterProfile(codeFormatterProfile.get().toPath());
+            jpaGeneratorBuilder.codeFormatterProfile(codeFormatterProfile.get().toPath());
+        }
+
+        availableGenerators.put(InternalStorage.NAME, internalGeneratorBuilder.build());
+        availableGenerators.put(SpringMongoDbStorage.NAME, mongoGeneratorBuilder.build());
+        availableGenerators.put(SpringJpaStorage.NAME, jpaGeneratorBuilder.build());
+
         return availableGenerators;
     }
 

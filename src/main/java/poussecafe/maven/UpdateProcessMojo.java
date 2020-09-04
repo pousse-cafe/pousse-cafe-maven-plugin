@@ -46,7 +46,7 @@ public class UpdateProcessMojo extends AbstractMojo {
             } else {
                 var newModel = modelOperations.buildModelFromEmil(getLog(), temporaryFile, basePackage);
                 modelOperations.importModel(Optional.of(currentModel), newModel, sourceDirectory,
-                        asSet(storageAdapters));
+                        asSet(storageAdapters), Optional.ofNullable(codeFormatterProfile));
             }
         } catch (IOException e) {
             throw new MojoFailureException("Unable to update process", e);
@@ -116,6 +116,14 @@ public class UpdateProcessMojo extends AbstractMojo {
      */
     @Parameter(defaultValue = InternalStorage.NAME, property = "storageAdapters", required = true)
     private String[] storageAdapters;
+
+    /**
+     * Path to a JDT code formatter profile file. This kind of file may be exported directly using Eclipse.
+     *
+     * @since 0.17
+     */
+    @Parameter(property = "codeFormatterProfile")
+    private File codeFormatterProfile;
 
     @Parameter(defaultValue = "${project}", readonly = true)
     private MavenProject project;
