@@ -18,7 +18,9 @@ import static poussecafe.collection.Collections.asSet;
 /**
  * <p>Imports a process described using
  * <a href="https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL" target="_blank">EMIL</a> language
- * i.e. generates missing types and methods in the code base.</p>
+ * i.e. generates missing types (aggregate classes, commands, events, adapters, etc.) and methods in the code base.</p>
+ *
+ * <p>Added method's implementation is initially empty.</p>
  */
 @Mojo(
     name = "import-process",

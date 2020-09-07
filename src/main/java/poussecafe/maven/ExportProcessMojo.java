@@ -15,7 +15,7 @@ import org.apache.maven.project.MavenProject;
 /**
  * <p>Exports a selected process or all processes into
  * <a href="https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL" target="_blank">EMIL</a> language
- * and outputs the result in Maven logs.</p>
+ * and outputs the result to a given file.</p>
  */
 @Mojo(
     name = "export-process",

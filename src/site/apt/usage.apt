@@ -8,6 +8,76 @@
 
 Usage
 
+* Add a new domain process
+
+    It is recommended to configure the storage adapters you want to use in your POM file. Indeed, this information
+    will not change very often.
+
+    You can configure the plugin by adding the following plugin element to your build section:
+
+---
+<build>
+    ...
+    <plugins>
+        ...
+        <plugin>
+            <groupId>org.pousse-cafe-framework</groupId>
+            <artifactId>pousse-cafe-maven-plugin</artifactId>
+            <version>${poussecafe.version}</version>
+            <configuration>
+                <storageAdapters>
+                    <storageAdapter>internal</storageAdapter>
+                    <storageAdapter>{put here any alternative storage or remove if not relevant}</storageAdapter>
+                </storageAdapters>
+            </configuration>
+        </plugin>
+        ...
+    </plugins>
+    ...
+</build>
+---
+
+    Possible values for alternative storage are "spring-mongo" or "spring-jpa" (without the quotes). Generally, you only
+    need one.
+
+    Create a file containing the {{{https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL} EMIL}} description of your new process.
+
+    After that, you can execute the following command in your Maven project:
+
+---
+mvn pousse-cafe:import-process -DbasePackage=model.base.package -DemilFile=/path/to/process.emil -DcodeFormatterProfile=/path/to/profile/codeFormatterProfile.xml
+---
+
+    As a result, missing classes and/or methods will be created automatically by the plugin. The next steps are the
+    addition of attributes to the aggregates, events and commands and the implementation of generated message listeners
+    and/or hooks.
+
+    Note that the codeFormatterProfile property is optional. If it is not provided, generated code will not be
+    formatted.
+
+* Update an existing process
+
+    For the configuration of the storage adapters, see above section.
+
+    To get the list of existing processes in a project, the following command can be executed:
+
+---
+mvn pousse-cafe:list-processes
+---
+
+    In order to update one of the listed processes, the following command should be executed:
+
+---
+mvn pousse-cafe:update-process -DprocessName=TheProcess -DbasePackage=model.base.package -DcodeFormatterProfile=/path/to/profile/codeFormatterProfile.xml
+---
+
+    As a result, a text editor will be opened offering the possibility to directly change the EMIL description of
+    selected process. If the description is not changed after saving and closing the editor, no import is executed.
+    Otherwise, missing classes and/or methods are generated.
+
+    The text editor is selected using $EDITOR environment variable. If the variable is empty, then vim is being used
+    as the default text editor.
+
 * Generating expert-readable documentation for your model
 
     In order to bind the documentation generation to package phase, add the following plugin element to your build
@@ -39,42 +109,4 @@ Usage
     </plugins>
     ...
 </build>
----
-
-* Add a new Aggregate
-
-    It is recommended to configure the storage adapters you want to use in your POM file. Indeed, this information
-    will not change very often and is most of the time not different from one Aggregate to another.
-
-    You can configure the plugin by adding the following plugin element to your build section:
-
----
-<build>
-    ...
-    <plugins>
-        ...
-        <plugin>
-            <groupId>org.pousse-cafe-framework</groupId>
-            <artifactId>pousse-cafe-maven-plugin</artifactId>
-            <version>${poussecafe.version}</version>
-            <configuration>
-                <storageAdapters>
-                    <storageAdapter>internal</storageAdapter>
-                    <storageAdapter>{put here any alternative storage}</storageAdapter>
-                </storageAdapters>
-            </configuration>
-        </plugin>
-        ...
-    </plugins>
-    ...
-</build>
----
-
-    Possible values for alternative storage are "spring-mongo" or "spring-jpa" (without the quotes). Generally, you only
-    need one.
-
-    After that, you can execute the following command in your Maven project:
-
----
-mvn pousse-cafe:add-aggregate -DaggregatePackage=your.model.base.package.aggregate -DaggregateName=YourNewAggregateName
 ---

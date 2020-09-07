@@ -19,8 +19,11 @@ import poussecafe.storage.internal.InternalStorage;
 import static poussecafe.collection.Collections.asSet;
 
 /**
- * <p>Updates a process. This goal is equivalent to calling export-process, edit the generated file
- * then call import-process.</p>
+ * <p>Updates a process. This goal is equivalent to calling <code>export-process</code>, edit the generated file
+ * then call <code>import-process</code>.</p>
+ *
+ * <p>The text editor is selected using $EDITOR environment variable. If the variable is empty, then vim is being used
+   as the default text editor.</p>
  */
 @Mojo(
     name = "update-process",

@@ -11,14 +11,23 @@
         </p>
 
         <p>
-          A module is described by the <code>package-info.java</code> in the Module's base package.
+          A module is described by an interface extending the <code>Module</code> interface. All components located
+          in the same package as this interface or a sub-package is considered as part of the module.
+        </p>
+
+        <p>
+          Another deprecated method is to use a <code>package-info.java</code> in the Module's base package.
           The package javadoc must contain the <code>@module</code> tag which defines the name of the Module.
-          Also, all components (including the module's <code>package-info.java</code> file) must be in the base package
-          configured for <a href="./generate-doc-mojo.html">generate-doc</a> goal.
+        </p>
+
+        <p>
+          All components (including the module's interface or <code>package-info.java</code> file) must be in the base
+          package configured for <a href="./generate-doc-mojo.html">generate-doc</a> goal.
         </p>
 
         <p>When your Module is defined in another Maven project, do not forget to put a source dependency on
-        that project as Pousse-Café uses static source code analysis to generate the documentation.</p>
+            that project as Pousse-Café uses static source code analysis to generate the documentation.
+        </p>
       </answer>
     </faq>
 

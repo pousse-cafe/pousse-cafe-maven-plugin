@@ -10,17 +10,26 @@ Pousse-Café Maven Plugin
 
     In the context of a {{{https://www.pousse-cafe-framework.org}Pousse-Café}} project, the plugin enables
 
-    * the generation of expert-readable documentation automatically built from the code,
+    * the generation of source code accelerating the work of a developer adding or updating a model's process
 
-    * the generation of source code accelerating the work of a developer adding a new Aggregate to the model.
+    * the generation of expert-readable documentation automatically built from the code
 
 * Goals Overview
 
+    * {{{./list-processes-mojo.html}pousse-cafe:list-processes}} shows the list of project's processes
+
+    * {{{./update-process-mojo.html}pousse-cafe:update-process}} enables the direct update of a process through the edition
+    of an {{{https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL}EMIL}} export of it
+
+    * {{{./export-process-mojo.html}pousse-cafe:export-process}} exports processes into
+    {{{https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL}EMIL}} language
+
+    * {{{./import-process-mojo.html}pousse-cafe:import-process}} imports a process described in
+    {{{https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL}EMIL}} language
+
+    * {{{./add-aggregate-mojo.html}pousse-cafe:add-aggregate}} generates source code for a new aggregate
+
     * {{{./generate-doc-mojo.html}pousse-cafe:generate-doc}} produces an expert-readable documentation of the model
-
-    * {{{./add-aggregate-mojo.html}pousse-cafe:add-aggregate}} generates source code for a new Aggregate
-
-    * {{{./export-process-mojo.html}pousse-cafe:export-process}} exports processes into {{{https://github.com/pousse-cafe/pousse-cafe/wiki/Introduction-to-EMIL}EMIL}} language
 
 * Usage
 
