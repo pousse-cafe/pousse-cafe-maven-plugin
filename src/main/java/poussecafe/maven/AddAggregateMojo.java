@@ -49,7 +49,7 @@ public class AddAggregateMojo extends AbstractMojo {
                 .packageName(aggregatePackage)
                 .build());
         modelOperations.importModel(Optional.of(currentModel), newModel, sourceDirectory,
-                asSet(storageAdapters), Optional.of(codeFormatterProfile));
+                asSet(storageAdapters), Optional.ofNullable(codeFormatterProfile));
     }
 
     @Inject
