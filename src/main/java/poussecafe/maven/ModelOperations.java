@@ -13,7 +13,7 @@ import java.util.Set;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
-import poussecafe.source.Scanner;
+import poussecafe.source.SourceModelBuilder;
 import poussecafe.source.emil.EmilExporter;
 import poussecafe.source.emil.parser.TreeAnalyzer;
 import poussecafe.source.emil.parser.TreeParser;
@@ -32,16 +32,16 @@ import poussecafe.storage.internal.InternalStorage;
 public class ModelOperations {
 
     public Model buildModelFromSource(MavenProject project) throws MojoExecutionException {
-        var scanner = new Scanner();
+        var builder = new SourceModelBuilder();
         for(String pathName : project.getCompileSourceRoots()) {
             Path path = Path.of(pathName);
             try {
-                scanner.includeTree(path);
+                builder.includeTree(path);
             } catch (IOException e) {
                 throw new MojoExecutionException("Unable to include " + path, e);
             }
         }
-        return scanner.model();
+        return builder.build();
     }
 
     public void exportProcess(Model model, Optional<String> processName, File outputFile) throws MojoExecutionException {
