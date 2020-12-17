@@ -62,7 +62,7 @@ public class ValidateMojo extends AbstractMojo {
     }
 
     private String prefix(ValidationMessage message) {
-        var path = message.location().sourceFile().path();
+        var path = message.location().sourceFile().id();
         var line = message.location().line();
         return path + " at line " + line + ": ";
     }
