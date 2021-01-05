@@ -2,6 +2,7 @@ package poussecafe.maven;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Optional;
 import javax.inject.Inject;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -11,10 +12,16 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import poussecafe.discovery.ReflectionsWrapper;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
+import poussecafe.source.validation.ClassPathExplorer;
+import poussecafe.source.validation.ReflectionsClassPathExplorer;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
 import poussecafe.source.validation.ValidationResult;
 import poussecafe.source.validation.Validator;
+
+import static java.util.Arrays.asList;
 
 /**
  * <p>Validates the project source code.</p>
@@ -31,7 +38,16 @@ public class ValidateMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         classPathConfigurator.configureClassPath(project, descriptor);
 
-        var validator = new Validator();
+        var resolver = new ClassLoaderClassResolver();
+        Optional<ClassPathExplorer> classPathExplorer = Optional.empty();
+        if(basePackages.length > 0) {
+            var reflections = new ReflectionsWrapper(asList(basePackages));
+            classPathExplorer = Optional.of(new ReflectionsClassPathExplorer.Builder()
+                    .reflections(reflections)
+                    .resolver(resolver)
+                    .build());
+        }
+        var validator = new Validator(resolver, classPathExplorer);
         for(String pathName : project.getCompileSourceRoots()) {
             Path path = Path.of(pathName);
             try {
@@ -75,12 +91,20 @@ public class ValidateMojo extends AbstractMojo {
     }
 
     /**
-     * If true, makes the build fail with warnings.
+     * If true, makes the build fail with warnings. False by default.
      *
      * @since 0.19
      */
     @Parameter(defaultValue = "false")
     private boolean failOnWarn;
+
+    /**
+     * Base packages used for classpath exploration. No base package implies no classpath exploration (default behavior).
+     *
+     * @since 0.19
+     */
+    @Parameter(defaultValue = "", property = "basePackages", required = true)
+    private String[] basePackages;
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)
     private MavenProject project;
