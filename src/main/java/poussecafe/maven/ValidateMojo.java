@@ -103,7 +103,7 @@ public class ValidateMojo extends AbstractMojo {
      *
      * @since 0.19
      */
-    @Parameter(defaultValue = "", property = "basePackages", required = true)
+    @Parameter(defaultValue = "", property = "basePackages")
     private String[] basePackages;
 
     @Parameter(defaultValue = "${project}", readonly = true, required = true)

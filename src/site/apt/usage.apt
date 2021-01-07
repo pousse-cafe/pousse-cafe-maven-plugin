@@ -110,3 +110,33 @@ mvn pousse-cafe:update-process -DprocessName=TheProcess -DbasePackage=model.base
     ...
 </build>
 ---
+
+* Validate code on compile phase
+
+    In order to quickly detect any issue in your Pousse-Café code, you may run code validation during compile phase,
+    which enables shorter feedback loops.
+
+---
+<build>
+    ...
+    <plugins>
+        ...
+        <plugin>
+            <groupId>org.pousse-cafe-framework</groupId>
+            <artifactId>pousse-cafe-maven-plugin</artifactId>
+            <version>${poussecafe.version}</version>
+            <executions>
+                <execution>
+                    <id>validate</id>
+                    <goals>
+                        <goal>validate</goal>
+                    </goals>
+                    <phase>compile</phase>
+                </execution>
+            </executions>
+        </plugin>
+        ...
+    </plugins>
+    ...
+</build>
+---
