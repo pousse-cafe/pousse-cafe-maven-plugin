@@ -14,6 +14,7 @@ import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
 import poussecafe.source.SourceModelBuilder;
+import poussecafe.source.analysis.ClassLoaderClassResolver;
 import poussecafe.source.emil.EmilExporter;
 import poussecafe.source.emil.parser.TreeAnalyzer;
 import poussecafe.source.emil.parser.TreeParser;
@@ -87,7 +88,8 @@ public class ModelOperations {
             Set<String> storageAdapters,
             Optional<File> codeFormatterProfile) {
         var generatorBuilder = new CoreCodeGenerator.Builder()
-                .sourceDirectory(sourceDirectory.toPath());
+                .sourceDirectory(sourceDirectory.toPath())
+                .classResolver(new ClassLoaderClassResolver());
         if(currentModel.isPresent()) {
             generatorBuilder.currentModel(currentModel.get());
         }
