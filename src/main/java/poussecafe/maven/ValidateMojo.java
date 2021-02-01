@@ -18,6 +18,7 @@ import poussecafe.source.validation.ClassPathExplorer;
 import poussecafe.source.validation.ReflectionsClassPathExplorer;
 import poussecafe.source.validation.ValidationMessage;
 import poussecafe.source.validation.ValidationMessageType;
+import poussecafe.source.validation.ValidationModelBuilder;
 import poussecafe.source.validation.ValidationResult;
 import poussecafe.source.validation.Validator;
 
@@ -39,6 +40,16 @@ public class ValidateMojo extends AbstractMojo {
         classPathConfigurator.configureClassPath(project, descriptor);
 
         var resolver = new ClassLoaderClassResolver();
+        var modelBuilder = new ValidationModelBuilder(resolver);
+        for(String pathName : project.getCompileSourceRoots()) {
+            Path path = Path.of(pathName);
+            try {
+                modelBuilder.includeTree(path);
+            } catch (IOException e) {
+                throw new MojoExecutionException("Unable to include " + path, e);
+            }
+        }
+
         Optional<ClassPathExplorer> classPathExplorer = Optional.empty();
         if(basePackages.length > 0) {
             var reflections = new ReflectionsWrapper(asList(basePackages));
@@ -47,15 +58,7 @@ public class ValidateMojo extends AbstractMojo {
                     .resolver(resolver)
                     .build());
         }
-        var validator = new Validator(resolver, classPathExplorer);
-        for(String pathName : project.getCompileSourceRoots()) {
-            Path path = Path.of(pathName);
-            try {
-                validator.includeTree(path);
-            } catch (IOException e) {
-                throw new MojoExecutionException("Unable to include " + path, e);
-            }
-        }
+        var validator = new Validator(modelBuilder.build(), classPathExplorer);
         validator.validate();
         var result = validator.result();
         var logger = getLog();
