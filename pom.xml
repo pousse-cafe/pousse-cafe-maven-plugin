@@ -14,7 +14,7 @@
     <version>0.21.0-SNAPSHOT</version>
 
     <properties>
-        <maven.version>3.6.2</maven.version>
+        <maven.version>3.6.3</maven.version>
         <maven-plugin-plugin.version>3.6.0</maven-plugin-plugin.version>
         <poussecafe.version>0.27.0-SNAPSHOT</poussecafe.version>
     </properties>
@@ -129,7 +129,7 @@
         <dependency>
             <groupId>org.codehaus.plexus</groupId>
             <artifactId>plexus-utils</artifactId>
-            <version>3.2.1</version>
+            <version>3.3.0</version>
         </dependency>
 
         <dependency>
@@ -141,7 +141,7 @@
         <dependency>
             <groupId>org.apache.maven.shared</groupId>
             <artifactId>maven-invoker</artifactId>
-            <version>3.0.1</version>
+            <version>3.1.0</version>
             <scope>test</scope>
             <exclusions>
                 <exclusion>
