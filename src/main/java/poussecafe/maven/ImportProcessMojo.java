@@ -70,7 +70,7 @@ public class ImportProcessMojo extends AbstractMojo {
 
     /**
      * List of storage adapters to create. Storage name is used to select them. By default, only internal storage
-     * classes are generated. Currently, supported storage names are: "internal", "spring-mongo", "spring-jpa".
+     * classes are generated. Currently, supported storage names are: "Internal", "SpringMongo", "SpringJpa".
      *
      * @since 0.17
      */

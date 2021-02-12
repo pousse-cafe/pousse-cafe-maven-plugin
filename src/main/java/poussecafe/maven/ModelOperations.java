@@ -22,17 +22,17 @@ import poussecafe.source.generation.CoreCodeGenerator;
 import poussecafe.source.generation.StorageAdaptersCodeGenerator;
 import poussecafe.source.generation.internal.InternalStorageAdaptersCodeGenerator;
 import poussecafe.source.model.Aggregate;
-import poussecafe.source.model.Model;
 import poussecafe.source.model.ProcessModel;
+import poussecafe.source.model.SourceModel;
 import poussecafe.spring.jpa.storage.SpringJpaStorage;
-import poussecafe.spring.jpa.storage.codegeneration.JpaStorageAdaptersCodeGenerator;
+import poussecafe.spring.jpa.storage.source.JpaStorageAdaptersCodeGenerator;
 import poussecafe.spring.mongo.storage.SpringMongoDbStorage;
-import poussecafe.spring.mongo.storage.codegeneration.MongoStorageAdaptersCodeGenerator;
+import poussecafe.spring.mongo.storage.source.MongoStorageAdaptersCodeGenerator;
 import poussecafe.storage.internal.InternalStorage;
 
 public class ModelOperations {
 
-    public Model buildModelFromSource(MavenProject project) throws MojoExecutionException {
+    public SourceModel buildModelFromSource(MavenProject project) throws MojoExecutionException {
         var builder = new SourceModelBuilder();
         for(String pathName : project.getCompileSourceRoots()) {
             Path path = Path.of(pathName);
@@ -45,7 +45,7 @@ public class ModelOperations {
         return builder.build();
     }
 
-    public void exportProcess(Model model, Optional<String> processName, File outputFile) throws MojoExecutionException {
+    public void exportProcess(SourceModel model, Optional<String> processName, File outputFile) throws MojoExecutionException {
         EmilExporter exporter = new EmilExporter.Builder()
                 .model(model)
                 .processName(processName)
@@ -58,7 +58,7 @@ public class ModelOperations {
         }
     }
 
-    public Model buildModelFromEmil(Log log, File emilFile, String basePackage) throws MojoExecutionException {
+    public SourceModel buildModelFromEmil(Log log, File emilFile, String basePackage) throws MojoExecutionException {
         try(var inputStream = new FileInputStream(emilFile)) {
             var tree = TreeParser.parseInputStream(inputStream);
             if(!tree.isValid()) {
@@ -82,8 +82,8 @@ public class ModelOperations {
     }
 
     public void importModel(
-            Optional<Model> currentModel,
-            Model newModel,
+            Optional<SourceModel> currentModel,
+            SourceModel newModel,
             File sourceDirectory,
             Set<String> storageAdapters,
             Optional<File> codeFormatterProfile) {
@@ -102,7 +102,7 @@ public class ModelOperations {
     }
 
     private void writeStorageAdaptersFiles(
-            Model newModel,
+            SourceModel newModel,
             File sourceDirectory,
             Set<String> storageAdapters,
             Optional<File> codeFormatterProfile) {
@@ -140,7 +140,7 @@ public class ModelOperations {
         return availableGenerators;
     }
 
-    public void listProcesses(Log log, Model model) {
+    public void listProcesses(Log log, SourceModel model) {
         log.info("Found " + model.processes().size() + " processes:");
         for(ProcessModel process : model.processes()) {
             log.info("- " + process.simpleName());

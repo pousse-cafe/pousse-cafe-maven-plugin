@@ -11,7 +11,7 @@ import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import poussecafe.source.model.Aggregate;
-import poussecafe.source.model.ModelBuilder;
+import poussecafe.source.model.SourceModelBuilder;
 import poussecafe.storage.internal.InternalStorage;
 
 import static poussecafe.collection.Collections.asSet;
@@ -43,7 +43,7 @@ public class AddAggregateMojo extends AbstractMojo {
         classPathConfigurator.configureClassPath(project, descriptor);
 
         var currentModel = modelOperations.buildModelFromSource(project);
-        var newModel = new ModelBuilder()
+        var newModel = new SourceModelBuilder()
             .putAggregate(new Aggregate.Builder()
                 .name(aggregateName)
                 .packageName(aggregatePackage))
@@ -84,7 +84,7 @@ public class AddAggregateMojo extends AbstractMojo {
 
     /**
      * List of storage adapters to create. Storage name is used to select them. By default, only internal storage
-     * classes are generated. Currently, supported storage names are: "internal", "spring-mongo", "spring-jpa".
+     * classes are generated. Currently, supported storage names are: "Internal", "SpringMongo", "SpringJpa".
      *
      * @since 0.3
      */
