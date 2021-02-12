@@ -16,7 +16,7 @@ script:
 - if ./can_auto_deploy.sh  ; then mvn deploy -B -U --settings settings.xml; else mvn verify -B -U; fi
 
 after_failure:
-- cat /home/travis/build/pousse-cafe/pousse-cafe-maven-plugin/target/its/add_aggregate/build.log
+- cat /home/travis/build/pousse-cafe/pousse-cafe-maven-plugin/target/its/add_aggregate/build.log | tail -n 100
 
 env:
   global:
