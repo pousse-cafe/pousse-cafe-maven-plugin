@@ -1,17 +1,20 @@
 language: java
+
 addons:
   apt:
     packages:
-    - xmlstarlet
     - graphviz
+    - xmlstarlet
+
 jdk:
 - oraclejdk11
+
 install: skip
+
 script:
-- mvn verify -B -U -Dmaven.javadoc.skip=true || cat /home/travis/build/pousse-cafe/pousse-cafe-maven-plugin/target/its/add_aggregate/build.log
-after_success:
 - wget -O settings.xml https://raw.githubusercontent.com/pousse-cafe/pousse-cafe-deploy/master/snapshot_release_settings.xml
-- ./can_auto_deploy.sh && mvn deploy --settings settings.xml -Dmaven.javadoc.skip=true -DskipTests
+- if ./can_auto_deploy.sh  ; then mvn deploy -B -U --settings settings.xml; else mvn verify -B -U; fi
+
 env:
   global:
   - secure: suNj41sc7HJaOwYaRE9gGvnGiFpJJ1nzLQ+AxkEGiy+1E6JdoVBlA73jcrXaokgIP2xk7t5aotTpUWSBglTXSBlcCNnh2NmbOFiVOyN4PJ3yEiP5ypF907tUdMVfumkSGdHMv/xSAzcjMMeguijVl6QkjN++USoa7OU9c9xsliIrIkKB//7qGWK8AbVE14hbRC3qKRpTH28jtSpWWnJ4mrsWn/WyaZCb9nzPPngy3bddmWt4tDuJ0/Ut5fsOhubYZ8ndhZjCKbSQC2p2CyPyoOmmC1CizIMqlcM5szfrL4UKdOVuxoeKHcO/jwbqLY+yWAYI0NFTlEHO0SBM8wO30Nrg7sXAzvdljYXC8QzMl6nys15QeXRvjs1+/vHZSPqF0WmuslPQeBI8auXHyJwR2p/+FsNfZ7oAh50IFd30seuymVevIusHKnrTdyctdj9Tfc4oIfBTgTDdrty8d3QRmeXUSfv8jRkYvoX3CaYXQk5ZAgmNBJeB6pTxAMTn17cttruNAo2ipTnuB2pYz/bjfC25R9G5En0GIgX5ROrXJ8RKDT1jWOIsa4JmQ2RyxnR06YfuUAD8wNcoBWeXr3yL+WdcbbyCXy5j/Won2zjpGuch2qhwI3re3uoBRyTefFp+BWLSxNfpV9YvWTKuCzRkYwkT6w1bxUDUTnp86twreEs=
