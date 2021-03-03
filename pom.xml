@@ -38,6 +38,12 @@
             <groupId>org.pousse-cafe-framework</groupId>
             <artifactId>pousse-cafe-source</artifactId>
             <version>0.28.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
