@@ -30,7 +30,7 @@
                 </exclusion>
                 <exclusion>
                     <groupId>org.pousse-cafe-framework</groupId>
-                    <artifactId>pousse-cafe-doc</artifactId>
+                    <artifactId>pousse-cafe-source</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
