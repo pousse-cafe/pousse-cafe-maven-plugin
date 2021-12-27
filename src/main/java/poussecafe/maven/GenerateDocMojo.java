@@ -4,17 +4,21 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import javax.inject.Inject;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.artifact.DependencyResolutionRequiredException;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
+import org.apache.maven.plugin.descriptor.PluginDescriptor;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import poussecafe.doc.PousseCafeDocletConfiguration;
-import poussecafe.doc.PousseCafeDocletExecutor;
+import poussecafe.doc.PousseCafeDocGenerationConfiguration;
+import poussecafe.doc.PousseCafeDocGenerator;
+import poussecafe.doc.doclet.PousseCafeDocletConfiguration;
+import poussecafe.doc.doclet.PousseCafeDocletExecutor;
 
 import static java.util.Collections.emptyList;
 
@@ -33,23 +37,39 @@ public class GenerateDocMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         if(!Boolean.parseBoolean(skipDoc)) {
-            List<String> sourcePath = getSourcePath();
-            List<String> classPath = getClassPath();
+            if(Boolean.parseBoolean(useDoclet)) {
+                List<String> sourcePath = getSourcePath();
+                List<String> classPath = getClassPath();
+                PousseCafeDocletConfiguration configuration = PousseCafeDocletConfiguration.builder()
+                        .generationConfiguration(buildConfiguration())
+                        .basePackage(basePackage)
+                        .sourcePath(sourcePath)
+                        .classPath(classPath)
+                        .build();
 
-            PousseCafeDocletConfiguration configuration = new PousseCafeDocletConfiguration.Builder()
-                    .domainName(domainName)
-                    .version(version)
-                    .sourcePath(sourcePath)
-                    .outputDirectory(outputDirectory.getAbsolutePath())
-                    .pdfFileName(pdfFileName)
-                    .basePackage(basePackage)
-                    .classPath(classPath)
-                    .customDotExecutable(Optional.ofNullable(customDotExecutable))
-                    .customFdpExecutable(Optional.ofNullable(customFdpExecutable))
-                    .build();
-
-            new PousseCafeDocletExecutor(configuration).execute();
+                new PousseCafeDocletExecutor(configuration).execute();
+            } else {
+                classPathConfigurator.configureClassPath(project, descriptor);
+                var model = modelOperations.buildModelFromSource(project);
+                var configuration = buildConfiguration();
+                var generator = PousseCafeDocGenerator.builder()
+                        .configuration(configuration)
+                        .model(model)
+                        .build();
+                generator.generate();
+            }
         }
+    }
+
+    private PousseCafeDocGenerationConfiguration buildConfiguration() {
+        return PousseCafeDocGenerationConfiguration.builder()
+                .domainName(domainName)
+                .version(version)
+                .outputDirectory(outputDirectory.getAbsolutePath())
+                .pdfFileName(pdfFileName)
+                .customDotExecutable(Optional.ofNullable(customDotExecutable))
+                .customFdpExecutable(Optional.ofNullable(customFdpExecutable))
+                .build();
     }
 
     private List<String> getSourcePath() {
@@ -78,6 +98,12 @@ public class GenerateDocMojo extends AbstractMojo {
         }
         return classPath;
     }
+
+    @Inject
+    private ClassPathConfigurator classPathConfigurator;
+
+    @Inject
+    private ModelOperations modelOperations;
 
     /**
      * The name of the domain represented by the Model. The name is essentially used in the title of the document.
@@ -150,4 +176,16 @@ public class GenerateDocMojo extends AbstractMojo {
      */
     @Parameter(property = "skipDoc", required = true, defaultValue = "false")
     private String skipDoc;
+
+    /**
+     * Use the doclet to generate documentation. This method has been superseded by direct source analysis. Set
+     * this flag to true if you are still using the now-deprecated javadoc custom tags.
+     *
+     * @since 0.23
+     */
+    @Parameter(property = "useDoclet", required = true, defaultValue = "false")
+    private String useDoclet;
+
+    @Parameter(defaultValue = "${plugin}", readonly = true)
+    private PluginDescriptor descriptor;
 }

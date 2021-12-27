@@ -10,6 +10,8 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
+import poussecafe.source.analysis.ClassName;
+import poussecafe.source.analysis.SafeClassName;
 import poussecafe.source.model.Aggregate;
 import poussecafe.source.model.SourceModelBuilder;
 import poussecafe.storage.internal.InternalStorage;
@@ -46,7 +48,10 @@ public class AddAggregateMojo extends AbstractMojo {
         var newModel = new SourceModelBuilder()
             .putAggregate(new Aggregate.Builder()
                 .name(aggregateName)
-                .packageName(aggregatePackage))
+                .className(new SafeClassName.Builder()
+                        .rootClassName(new ClassName(aggregatePackage, aggregateName))
+                        .appendPathElement("Root")
+                        .build()))
             .build();
         modelOperations.importModel(Optional.of(currentModel), newModel, sourceDirectory,
                 asSet(storageAdapters), Optional.ofNullable(codeFormatterProfile));
