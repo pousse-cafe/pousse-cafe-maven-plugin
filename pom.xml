@@ -11,7 +11,7 @@
     <artifactId>pousse-cafe-maven-plugin</artifactId>
     <name>Pousse-Café - Maven Plugin</name>
     <packaging>maven-plugin</packaging>
-    <version>0.23.0-SNAPSHOT</version>
+    <version>0.23.0</version>
 
     <properties>
         <maven.version>3.6.3</maven.version>
@@ -22,7 +22,7 @@
         <dependency>
             <groupId>org.pousse-cafe-framework</groupId>
             <artifactId>pousse-cafe-doc</artifactId>
-            <version>0.29.0-SNAPSHOT</version>
+            <version>0.29.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
