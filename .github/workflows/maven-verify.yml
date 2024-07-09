@@ -21,3 +21,5 @@ jobs:
 
       - name: Verify
         run: mvn -B -U verify
+
+      - run: cat target/its/add_aggregate/build.log
