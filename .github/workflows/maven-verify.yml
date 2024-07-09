@@ -22,4 +22,10 @@ jobs:
       - name: Verify
         run: mvn -B -U verify
 
-      - run: echo $(cat target/its/add_aggregate/build.log)
+      - name: Read build.log
+        id: build
+        uses: juliangruber/read-file-action@v1
+        with:
+          path: ./target/its/add_aggregate/build.log
+
+      - run: echo "${{ steps.build.outputs.content }}"
