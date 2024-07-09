@@ -191,6 +191,7 @@
                 </executions>
                 <configuration>
                     <debug>true</debug>
+                    <showErrors>true</showErrors>
                 </configuration>
             </plugin>
             <plugin>
