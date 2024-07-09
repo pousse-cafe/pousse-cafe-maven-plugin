@@ -190,8 +190,7 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <debug>true</debug>
-                    <showErrors>true</showErrors>
+                    <noLog>true</noLog>
                 </configuration>
             </plugin>
             <plugin>
