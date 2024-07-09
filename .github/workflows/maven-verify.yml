@@ -20,4 +20,4 @@ jobs:
           cache: maven
 
       - name: Verify
-        run: mvn -B -U -X verify
+        run: mvn -B -U verify
