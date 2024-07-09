@@ -21,3 +21,5 @@ jobs:
 
       - name: Verify
         run: mvn -B -U verify
+
+      - run: cat /home/runner/work/pousse-cafe-maven-plugin/pousse-cafe-maven-plugin/target/its/add_aggregate/build.log
