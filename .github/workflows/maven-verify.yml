@@ -28,4 +28,5 @@ jobs:
         with:
           path: ./target/its/add_aggregate/build.log
 
-      - run: echo "${{ steps.build.outputs.content }}"
+      - name: Show build.log
+        run: echo "${{ steps.build.outputs.content }}"
