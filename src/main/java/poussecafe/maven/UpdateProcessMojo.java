@@ -38,7 +38,7 @@ public class UpdateProcessMojo extends AbstractMojo {
         classPathConfigurator.configureClassPath(project, descriptor);
 
         try {
-            var currentModel = modelOperations.buildModelFromSource(project);
+            var currentModel = modelOperations.buildModelFromSource(getLog(), project);
             var temporaryFile = File.createTempFile(processName, ".emil");
             modelOperations.exportProcess(currentModel, Optional.ofNullable(processName), temporaryFile);
             var initialContent = Files.readString(temporaryFile.toPath());

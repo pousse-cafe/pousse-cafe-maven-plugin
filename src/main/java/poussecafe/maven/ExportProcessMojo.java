@@ -28,7 +28,7 @@ public class ExportProcessMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         classPathConfigurator.configureClassPath(project, descriptor);
-        var model = modelOperations.buildModelFromSource(project);
+        var model = modelOperations.buildModelFromSource(getLog(), project);
         modelOperations.exportProcess(model, Optional.ofNullable(processName), emilFile);
     }
 

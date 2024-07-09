@@ -50,7 +50,7 @@ public class GenerateDocMojo extends AbstractMojo {
                 new PousseCafeDocletExecutor(configuration).execute();
             } else {
                 classPathConfigurator.configureClassPath(project, descriptor);
-                var model = modelOperations.buildModelFromSource(project);
+                var model = modelOperations.buildModelFromSource(getLog(), project);
                 var configuration = buildConfiguration();
                 var generator = PousseCafeDocGenerator.builder()
                         .configuration(configuration)

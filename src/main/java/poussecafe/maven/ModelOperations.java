@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,14 +33,16 @@ import poussecafe.storage.internal.InternalStorage;
 
 public class ModelOperations {
 
-    public SourceModel buildModelFromSource(MavenProject project) throws MojoExecutionException {
+    public SourceModel buildModelFromSource(Log log, MavenProject project) throws MojoExecutionException {
         var builder = new SourceModelBuilder();
         for(String pathName : project.getCompileSourceRoots()) {
             Path path = Path.of(pathName);
-            try {
-                builder.includeTree(path);
-            } catch (IOException e) {
-                throw new MojoExecutionException("Unable to include " + path, e);
+            if(path.toFile().exists()) {
+                try {
+                    builder.includeTree(path);
+                } catch (IOException e) {
+                    throw new MojoExecutionException("Unable to include " + path, e);
+                }
             }
         }
         return builder.build();

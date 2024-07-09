@@ -21,12 +21,3 @@ jobs:
 
       - name: Verify
         run: mvn -B -U verify
-
-      - name: Read build.log
-        id: build
-        uses: juliangruber/read-file-action@v1
-        with:
-          path: ./target/its/add_aggregate/build.log
-
-      - name: Show build.log
-        run: echo "${{ steps.build.outputs.content }}"

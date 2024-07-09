@@ -44,7 +44,7 @@ public class AddAggregateMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException {
         classPathConfigurator.configureClassPath(project, descriptor);
 
-        var currentModel = modelOperations.buildModelFromSource(project);
+        var currentModel = modelOperations.buildModelFromSource(getLog(), project);
         var newModel = new SourceModelBuilder()
             .putAggregate(new Aggregate.Builder()
                 .name(aggregateName)

@@ -24,8 +24,9 @@ public class ListProcessesMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         classPathConfigurator.configureClassPath(project, descriptor);
-        var model = modelOperations.buildModelFromSource(project);
-        modelOperations.listProcesses(getLog(), model);
+        var log = getLog();
+        var model = modelOperations.buildModelFromSource(log, project);
+        modelOperations.listProcesses(log, model);
     }
 
     @Inject
