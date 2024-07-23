@@ -20,8 +20,7 @@ import org.apache.maven.project.MavenProject;
 @Mojo(
     name = "export-process",
     requiresDependencyResolution = ResolutionScope.COMPILE_PLUS_RUNTIME,
-    requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME,
-    requiresDirectInvocation = true
+    requiresDependencyCollection = ResolutionScope.COMPILE_PLUS_RUNTIME
 )
 public class ExportProcessMojo extends AbstractMojo {
 
