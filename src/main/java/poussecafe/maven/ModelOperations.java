@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
+
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.project.MavenProject;
@@ -39,8 +40,19 @@ public class ModelOperations {
             if(path.toFile().exists()) {
                 try {
                     builder.includeTree(path);
+                    log.debug("Included " + path.toString());
                 } catch (IOException e) {
-                    throw new MojoExecutionException("Unable to include " + path, e);
+                    throw new MojoExecutionException("Unable to include source root " + path, e);
+                }
+            }
+        }
+        for(var path : project.getArtifacts()) {
+            if(path.hasClassifier() && path.getClassifier().equals("sources")) {
+                try {
+                    builder.includeTree(path.getFile().toPath());
+                    log.debug("Included " + path.getFile());
+                } catch (IOException e) {
+                    throw new MojoExecutionException("Unable to include artifact " + path, e);
                 }
             }
         }
